@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const cultivateurRoutes = require("./routes/cultivateurRoutes");
 
 const app = express();
 
@@ -33,6 +34,9 @@ app.get("/api/health", (req, res) => {
     message: "API RizManager opérationnelle"
   });
 });
+
+// Routes des cultivateurs
+app.use("/api/cultivateurs", cultivateurRoutes);
 
 // Démarrage serveur
 const PORT = process.env.PORT || 5000;
