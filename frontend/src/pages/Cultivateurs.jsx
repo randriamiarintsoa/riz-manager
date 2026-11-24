@@ -34,6 +34,7 @@ function Cultivateurs() {
   const [formData, setFormData] = useState(initialForm);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
+  const [editingCultivateur, setEditingCultivateur] = useState(null);
 
   // Récupérer les cultivateurs
   const fetchCultivateurs = async () => {
@@ -69,7 +70,13 @@ function Cultivateurs() {
   };
 
   // Ouvrir le formulaire
+  // const openForm = () => {
+  //   setFormData(initialForm);
+  //   setFormError("");
+  //   setShowForm(true);
+  // };
   const openForm = () => {
+    setEditingCultivateur(null);
     setFormData(initialForm);
     setFormError("");
     setShowForm(true);
@@ -78,44 +85,103 @@ function Cultivateurs() {
   // Fermer le formulaire
   const closeForm = () => {
     if (saving) return;
-
+  
     setShowForm(false);
+    setEditingCultivateur(null);
     setFormError("");
   };
 
   // Ajouter un cultivateur
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormError("");
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setFormError("");
 
-    try {
-      setSaving(true);
+  //   try {
+  //     setSaving(true);
 
-      const dataToSend = {
-        ...formData,
-        dateNaissance: formData.dateNaissance || null,
-        cin: formData.cin.trim() || null,
-      };
+  //     const dataToSend = {
+  //       ...formData,
+  //       dateNaissance: formData.dateNaissance || null,
+  //       cin: formData.cin.trim() || null,
+  //     };
 
-      await api.post("/cultivateurs", dataToSend);
+  //     await api.post("/cultivateurs", dataToSend);
 
-      setShowForm(false);
-      setFormData(initialForm);
+  //     if (editingCultivateur) {
+  //       await api.put(
+  //         `/cultivateurs/${editingCultivateur._id}`,
+  //         dataToSend
+  //       );
+  //     } else {
+  //       await api.post("/cultivateurs", dataToSend);
+  //     }
 
-      await fetchCultivateurs();
+  //     setShowForm(false);
+  //     setFormData(initialForm);
+  //     setEditingCultivateur(null);
 
-      alert("Cultivateur ajouté avec succès !");
-    } catch (err) {
-      console.error("Erreur lors de l'ajout :", err);
+  //     await fetchCultivateurs();
 
-      setFormError(
-        err.response?.data?.message ||
-          "Impossible d'ajouter le cultivateur. Vérifiez les informations."
+  //     alert("Cultivateur ajouté avec succès !");
+  //   } catch (err) {
+  //     console.error("Erreur lors de l'ajout :", err);
+
+  //     setFormError(
+  //       err.response?.data?.message ||
+  //         "Impossible d'ajouter le cultivateur. Vérifiez les informations."
+  //     );
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setFormError("");
+
+  try {
+    setSaving(true);
+
+    const dataToSend = {
+      ...formData,
+      dateNaissance: formData.dateNaissance || null,
+      cin: formData.cin.trim() || null,
+    };
+
+    if (editingCultivateur) {
+      // Modification d'un cultivateur existant
+      await api.put(
+        `/cultivateurs/${editingCultivateur._id}`,
+        dataToSend
       );
-    } finally {
-      setSaving(false);
+    } else {
+      // Création d'un nouveau cultivateur
+      await api.post("/cultivateurs", dataToSend);
     }
-  };
+
+    setShowForm(false);
+    setFormData(initialForm);
+    setEditingCultivateur(null);
+
+    await fetchCultivateurs();
+
+    alert(
+      editingCultivateur
+        ? "Cultivateur modifié avec succès !"
+        : "Cultivateur ajouté avec succès !"
+    );
+  } catch (err) {
+    console.error("Erreur lors de l'enregistrement :", err);
+
+    setFormError(
+      err.response?.data?.message ||
+        "Impossible d'enregistrer le cultivateur. Vérifiez les informations."
+    );
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   // Recherche
   const filteredCultivateurs = cultivateurs.filter((cultivateur) => {
@@ -129,6 +195,27 @@ function Cultivateurs() {
       telephone.includes(search)
     );
   });
+
+  // Ouvrir le formulaire en mode modification
+const handleEdit = (cultivateur) => {
+  setEditingCultivateur(cultivateur);
+
+  setFormData({
+    nom: cultivateur.nom || "",
+    prenom: cultivateur.prenom || "",
+    telephone: cultivateur.telephone || "",
+    adresse: cultivateur.adresse || "",
+    sexe: cultivateur.sexe || "",
+    dateNaissance: cultivateur.dateNaissance
+      ? cultivateur.dateNaissance.slice(0, 10)
+      : "",
+    cin: cultivateur.cin || "",
+    statut: cultivateur.statut || "Actif",
+  });
+
+  setFormError("");
+  setShowForm(true);
+};
 
   return (
     <section className="cultivateurs-page">
@@ -247,7 +334,13 @@ function Cultivateurs() {
                           <Eye size={16} />
                         </button>
 
-                        <button title="Modifier">
+                        {/* <button title="Modifier">
+                          <Pencil size={16} />
+                        </button> */}
+                      <button
+                          title="Modifier"
+                          onClick={() => handleEdit(cultivateur)}
+                        >
                           <Pencil size={16} />
                         </button>
 
@@ -283,8 +376,13 @@ function Cultivateurs() {
           >
             <div style={styles.modalHeader}>
               <div>
-                <h2 id="form-title" style={styles.modalTitle}>
+                {/* <h2 id="form-title" style={styles.modalTitle}>
                   Nouveau cultivateur
+                </h2> */}
+                <h2 id="form-title" style={styles.modalTitle}>
+                  {editingCultivateur
+                    ? "Modifier le cultivateur"
+                    : "Nouveau cultivateur"}
                 </h2>
 
                 <p style={styles.modalDescription}>
@@ -436,7 +534,11 @@ function Cultivateurs() {
                   disabled={saving}
                   style={styles.submitButton}
                 >
-                  {saving ? "Enregistrement..." : "Enregistrer"}
+                  {saving
+                ? "Enregistrement..."
+                : editingCultivateur
+                  ? "Enregistrer les modifications"
+                  : "Enregistrer"}
                 </button>
               </div>
             </form>
