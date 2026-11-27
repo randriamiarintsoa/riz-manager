@@ -217,6 +217,32 @@ const handleEdit = (cultivateur) => {
   setShowForm(true);
 };
 
+  // Supprimer un cultivateur
+  const handleDelete = async (cultivateur) => {
+    const confirmed = window.confirm(
+      `Voulez-vous vraiment supprimer ${cultivateur.nom} ${cultivateur.prenom} ?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/cultivateurs/${cultivateur._id}`);
+
+      // Retirer le cultivateur de la liste après suppression
+      setCultivateurs((previous) =>
+        previous.filter((item) => item._id !== cultivateur._id)
+      );
+
+      alert("Cultivateur supprimé avec succès !");
+    } catch (err) {
+      console.error("Erreur lors de la suppression :", err);
+
+      alert(
+        err.response?.data?.message ||
+        "Impossible de supprimer ce cultivateur."
+      );
+    }
+  };
   return (
     <section className="cultivateurs-page">
       <div className="cultivateurs-heading">
@@ -347,6 +373,7 @@ const handleEdit = (cultivateur) => {
                         <button
                           title="Supprimer"
                           className="delete-action"
+                          onClick={() => handleDelete(cultivateur)}
                         >
                           <Trash2 size={16} />
                         </button>
