@@ -31,6 +31,7 @@ import {
 
 import "./App.css";
 import Cultivateurs from "./pages/Cultivateurs";
+import Parcelles from "./pages/Parcelles";
 
 const navigation = [
   { label: "Tableau de bord", icon: LayoutDashboard },
@@ -250,10 +251,16 @@ function App() {
         </header>
 
         {/* CONTENU SELON LA PAGE ACTIVE */}
-        <div className="dashboard-content">
+        {/* <div className="dashboard-content">
           {activePage === "Cultivateurs" ? (
             <Cultivateurs />
-          ) : activePage === "Tableau de bord" ? (
+          ) : activePage === "Tableau de bord" ? ( */}
+          <div className="dashboard-content">
+            {activePage === "Cultivateurs" ? (
+              <Cultivateurs />
+            ) : activePage === "Parcelles" ? (
+              <Parcelles />
+            ) : activePage === "Tableau de bord" ? (
             <>
               {/* BIENVENUE */}
               <section className="welcome-section">
