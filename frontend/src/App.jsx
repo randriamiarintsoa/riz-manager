@@ -32,11 +32,20 @@ import {
 import "./App.css";
 import Cultivateurs from "./pages/Cultivateurs";
 import Parcelles from "./pages/Parcelles";
+import Campagnes from "./pages/Campagnes";
 
+// const navigation = [
+//   { label: "Tableau de bord", icon: LayoutDashboard },
+//   { label: "Cultivateurs", icon: Users },
+//   { label: "Parcelles", icon: Sprout },
+//   { label: "Récoltes", icon: Wheat },
+//   { label: "Ventes", icon: ShoppingCart },
+// ];
 const navigation = [
   { label: "Tableau de bord", icon: LayoutDashboard },
   { label: "Cultivateurs", icon: Users },
   { label: "Parcelles", icon: Sprout },
+  { label: "Campagnes", icon: CalendarDays },
   { label: "Récoltes", icon: Wheat },
   { label: "Ventes", icon: ShoppingCart },
 ];
@@ -251,16 +260,15 @@ function App() {
         </header>
 
         {/* CONTENU SELON LA PAGE ACTIVE */}
-        {/* <div className="dashboard-content">
+        
+          <div className="dashboard-content">
           {activePage === "Cultivateurs" ? (
             <Cultivateurs />
-          ) : activePage === "Tableau de bord" ? ( */}
-          <div className="dashboard-content">
-            {activePage === "Cultivateurs" ? (
-              <Cultivateurs />
-            ) : activePage === "Parcelles" ? (
-              <Parcelles />
-            ) : activePage === "Tableau de bord" ? (
+          ) : activePage === "Parcelles" ? (
+            <Parcelles />
+          ) : activePage === "Campagnes" ? (
+            <Campagnes />
+          ) : activePage === "Tableau de bord" ? (
             <>
               {/* BIENVENUE */}
               <section className="welcome-section">
