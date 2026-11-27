@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const cultivateurRoutes = require("./routes/cultivateurRoutes");
+const parcelleRoutes = require("./routes/parcelleRoutes");
 
 const app = express();
 
@@ -37,6 +38,8 @@ app.get("/api/health", (req, res) => {
 
 // Routes des cultivateurs
 app.use("/api/cultivateurs", cultivateurRoutes);
+// Routes des parcelleRoutes
+app.use("/api/parcelles", parcelleRoutes);
 
 // Démarrage serveur
 const PORT = process.env.PORT || 5000;
